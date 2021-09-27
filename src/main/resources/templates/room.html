@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>[[${nameOfRoom}]]</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
+</head>
+<body>
+
+    <script type="text/javascript">
+
+        let requestUrl = "http://ip-api.com/json";
+        let buttonsHTML = "<button type=\"button\" class=\"btn btn-outline-secondary\" onclick=\"switchBulbOn()\">Bulb on</button>\n" +
+            "              <button type=\"button\" class=\"btn btn-secondary\" onclick=\"switchBulbOff()\">Bulb off</button>";
+        let buttonBackHTML = "<a class=\"btn btn-primary\" href=\"/\" role=\"button\">Back to rooms list</a>";
+        let nameOfRoom = "<h1>[[${nameOfRoom}]]</h1>";
+        let bulbButtonWasExecutedTheFirstTime = true;
+        let pathname = $(location).attr('pathname'); // get path like rooms\12
+        let numberOfRoom = pathname.substring(6); // get number of room
+        let bulbIsOn = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"512\" height=\"512\" fill=\"#666666\" class=\"bi bi-lightbulb\" viewBox=\"0 0 16 16\">\n" +
+            "            <path d=\"M2 6a6 6 0 1 1 10.174 4.31c-.203.196-.359.4-.453.619l-.762 1.769A.5.5 0 0 1 10.5 13a.5.5 0 0 1 0 1 .5.5 0 0 1 0 1l-.224.447a1 1 0 0 1-.894.553H6.618a1 1 0 0 1-.894-.553L5.5 15a.5.5 0 0 1 0-1 .5.5 0 0 1 0-1 .5.5 0 0 1-.46-.302l-.761-1.77a1.964 1.964 0 0 0-.453-.618A5.984 5.984 0 0 1 2 6zm6-5a5 5 0 0 0-3.479 8.592c.263.254.514.564.676.941L5.83 12h4.342l.632-1.467c.162-.377.413-.687.676-.941A5 5 0 0 0 8 1z\"/>\n" +
+            "        </svg>";
+        let bulbIsOff = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"512\" height=\"512\" fill=\"#666666\" class=\"bi bi-lightbulb-off\" viewBox=\"0 0 16 16\">\n" +
+            "            <path fill-rule=\"evenodd\" d=\"M2.23 4.35A6.004 6.004 0 0 0 2 6c0 1.691.7 3.22 1.826 4.31.203.196.359.4.453.619l.762 1.769A.5.5 0 0 0 5.5 13a.5.5 0 0 0 0 1 .5.5 0 0 0 0 1l.224.447a1 1 0 0 0 .894.553h2.764a1 1 0 0 0 .894-.553L10.5 15a.5.5 0 0 0 0-1 .5.5 0 0 0 0-1 .5.5 0 0 0 .288-.091L9.878 12H5.83l-.632-1.467a2.954 2.954 0 0 0-.676-.941 4.984 4.984 0 0 1-1.455-4.405l-.837-.836zm1.588-2.653.708.707a5 5 0 0 1 7.07 7.07l.707.707a6 6 0 0 0-8.484-8.484zm-2.172-.051a.5.5 0 0 1 .708 0l12 12a.5.5 0 0 1-.708.708l-12-12a.5.5 0 0 1 0-.708z\"/>\n" +
+            "        </svg>";
+
+        getIp();
+
+        function getIp(){
+            $.ajax({
+                url: requestUrl,
+                type: 'GET',
+                success: function(json) {
+                    sendIp(json.query);
+                },
+                error: function(err) {
+                    console.log("Request failed, error= " + err);
+                }
+            });
+        }
+
+        // send ip on the server to get back the country
+        function sendIp(userIp){
+            $.ajax({
+                url: '/send_ip',
+                type: 'POST',
+                cache: false,
+                contentType: 'application/json',
+                data: userIp,
+                success: function() {
+                    getCountry();
+                },
+                error: function(err) {
+                    console.log("Request failed, error= " + err);
+                }
+            })
+        }
+
+        function getCountry(){
+            $.ajax({
+                url: '/get_country',
+                type: 'GET',
+                success: function(country) {
+                    $.ajax({
+                        url: '/get_rooms',
+                        success: function(data) {
+                            for(let i = 0; i<data.length; i++){
+                                if(data[i].id==numberOfRoom){
+                                    if(data[i].country!=country) {
+                                        $("#nameOfRoom").html(nameOfRoom);
+                                        alert("Sorry, but you are not form "+data[i].country+ ". Please, find a room, that was created for your country ("+country+").");
+                                        callMainPage();
+                                    }
+                                    else{
+                                        executeQuery();
+                                    }
+                                }
+                            }
+                        }
+                    });
+                },
+                error: function(err) {
+                    console.log("Request failed, error= " + err);
+                }
+            });
+        }
+
+        // it is used to update the bulb on the page
+        function executeQuery() {
+            $.ajax({
+                url: '/get_rooms',
+                success: function(data) {
+                    for(let i = 0; i<data.length; i++){
+                        if(data[i].id==numberOfRoom){
+                            if(data[i].enabled==true){
+                                $("#bulb").html(bulbIsOn);
+                            } else{
+                                $("#bulb").html(bulbIsOff);
+                            }
+                        }
+
+                        // it will draw only one time
+                        if(bulbButtonWasExecutedTheFirstTime){
+                            $("#nameOfRoom").html(nameOfRoom);
+                            $("#bulbButtons").html(buttonsHTML);
+                            $("#backButton").html(buttonBackHTML);
+                            bulbButtonWasExecutedTheFirstTime=false;
+                        }
+
+                    }
+                }
+            });
+            setTimeout(executeQuery, 100);
+        }
+
+        function switchBulbOn(){
+            $.ajax({
+                url: '/update/'+numberOfRoom,
+                type: 'POST',
+                cache: false,
+                contentType: 'application/json',
+                data: "true",
+                error: function(err) {
+                    console.log("Request failed, error= " + err);
+                }
+            })
+        }
+
+        function switchBulbOff(){
+            $.ajax({
+                url: '/update/'+numberOfRoom,
+                type: 'POST',
+                cache: false,
+                contentType: 'application/json',
+                data: "false",
+                error: function(err) {
+                    console.log("Request failed, error= " + err);
+                }
+            })
+
+        }
+
+        function callMainPage() {
+            window.location.replace("/");
+        }
+
+    </script>
+
+    <div class="container-fluid text-center">
+        <br>
+        <div class="text-center">
+            <div id="nameOfRoom"></div>
+            <div id="bulb"></div>
+            <br>
+            <div>
+                <form id="bulbButtons"></form>
+                <br>
+            </div>
+            <div id="backButton"></div>
+        </div>
+    </div>
+
+</body>
+</html>
