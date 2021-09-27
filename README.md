@@ -13,7 +13,7 @@
 Когда нам будет предложено ввести пароль для тестирования соединения - вводим pass (опять же, не перепутать :) ).
 
 2) Для запуска приложения Вам необходим Java development kit 17 версии. Загрузить его на момент написания данного руководства можно было [тут](https://www.oracle.com/java/technologies/downloads/)
-https://www.oracle.com/java/technologies/downloads/
+https://www.oracle.com/java/technologies/downloads/)
 Для windows необходимо настроить переменные среды окружения. Более подробно например [здесь](https://www.oracle.com/java/technologies/downloads/https://java.com/ru/download/help/path_ru.html)
 
 3) Разархивируем проект в отдельную папку, заходим в нее с помощью консоли, например в моем случае путь к папке выглядит так:
