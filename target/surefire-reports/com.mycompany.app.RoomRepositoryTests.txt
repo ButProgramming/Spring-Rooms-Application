@@ -1,0 +1,10 @@
+-------------------------------------------------------------------------------
+Test set: com.mycompany.app.RoomRepositoryTests
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 1.312 s <<< FAILURE! - in com.mycompany.app.RoomRepositoryTests
+testGet  Time elapsed: 0.264 s  <<< FAILURE!
+java.lang.AssertionError: 
+
+Expecting Optional to contain a value but it was empty.
+	at com.mycompany.app.RoomRepositoryTests.testGet(RoomRepositoryTests.java:48)
+

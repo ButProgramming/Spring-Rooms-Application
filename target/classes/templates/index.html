@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage rooms</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
+</head>
+<body>
+<div class="container-fluid text-center">
+
+    <div class="m-2">
+        <a class="h3" th:href="@{/new}">Create new room</a>
+    </div>
+    <br>
+    <div><h2>List of rooms</h2></div>
+
+    <div th:if="${message}" class="alert alert-success text-center">
+        [[${message}]]
+    </div>
+
+    <div>
+       <table class="table table-bordered" style="width: 40%; margin: auto;">
+
+            <thead class="thead-dark">
+            <tr>
+                <th>Name</th>
+                <th>Country</th>
+                <th>Enter the room</th>
+            </tr>
+            </thead>
+            <tbody>
+            <th:block th:each="room: ${listRooms}">
+                <tr>
+
+                    <td>[[${room.name}]]</td>
+                    <td>[[${room.country}]]</td>
+                    <td>
+                        <a class="h4 mr-3" th:href="@{'/room/' + ${room.id}}">Enter</a>
+                    </td>
+                </tr>
+            </th:block>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</body>
+</html>

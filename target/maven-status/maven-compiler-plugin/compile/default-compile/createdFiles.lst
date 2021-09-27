@@ -1,0 +1,9 @@
+com\mycompany\MyWebAppApplication.class
+com\mycompany\app\room\Room.class
+com\mycompany\app\room\RoomRestController.class
+com\mycompany\app\room\RoomRepository.class
+com\mycompany\app\room\RoomNotFoundException.class
+com\mycompany\app\geo\GeoIPController.class
+com\mycompany\app\room\RoomController.class
+com\mycompany\app\geo\GeoIPService.class
+com\mycompany\app\room\RoomService.class
